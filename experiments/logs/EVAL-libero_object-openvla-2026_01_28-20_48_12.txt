@@ -1,0 +1,61 @@
+Task suite: libero_object
+Using default initial states
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 1...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_48_12--openvla_oft--episode=1--success=False--task=pick_up_the_alphabet_soup_and_place_it_in_the_bask.mp4
+Success: False
+# episodes completed so far: 1
+# successes: 0 (0.0%)
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 2...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_48_12--openvla_oft--episode=2--success=False--task=pick_up_the_alphabet_soup_and_place_it_in_the_bask.mp4
+Success: False
+# episodes completed so far: 2
+# successes: 0 (0.0%)
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 3...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_48_12--openvla_oft--episode=3--success=False--task=pick_up_the_alphabet_soup_and_place_it_in_the_bask.mp4
+Success: False
+# episodes completed so far: 3
+# successes: 0 (0.0%)
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 4...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_48_12--openvla_oft--episode=4--success=False--task=pick_up_the_alphabet_soup_and_place_it_in_the_bask.mp4
+Success: False
+# episodes completed so far: 4
+# successes: 0 (0.0%)
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 5...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_48_12--openvla_oft--episode=5--success=False--task=pick_up_the_alphabet_soup_and_place_it_in_the_bask.mp4
+Success: False
+# episodes completed so far: 5
+# successes: 0 (0.0%)
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 6...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_48_12--openvla_oft--episode=6--success=False--task=pick_up_the_alphabet_soup_and_place_it_in_the_bask.mp4
+Success: False
+# episodes completed so far: 6
+# successes: 0 (0.0%)
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 7...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_48_12--openvla_oft--episode=7--success=False--task=pick_up_the_alphabet_soup_and_place_it_in_the_bask.mp4
+Success: False
+# episodes completed so far: 7
+# successes: 0 (0.0%)
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 8...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_48_12--openvla_oft--episode=8--success=False--task=pick_up_the_alphabet_soup_and_place_it_in_the_bask.mp4
+Success: False
+# episodes completed so far: 8
+# successes: 0 (0.0%)
+
+Task: pick up the alphabet soup and place it in the basket
+Starting episode 9...

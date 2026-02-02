@@ -1,0 +1,40 @@
+Task suite: libero_object
+Using default initial states
+
+Task: pick up the bbq sauce and place it in the basket
+Starting episode 1...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_54_33--openvla_oft--episode=1--success=True--task=pick_up_the_bbq_sauce_and_place_it_in_the_basket.mp4
+Success: True
+# episodes completed so far: 1
+# successes: 1 (100.0%)
+
+Task: pick up the bbq sauce and place it in the basket
+Starting episode 2...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_54_33--openvla_oft--episode=2--success=True--task=pick_up_the_bbq_sauce_and_place_it_in_the_basket.mp4
+Success: True
+# episodes completed so far: 2
+# successes: 2 (100.0%)
+
+Task: pick up the bbq sauce and place it in the basket
+Starting episode 3...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_54_33--openvla_oft--episode=3--success=True--task=pick_up_the_bbq_sauce_and_place_it_in_the_basket.mp4
+Success: True
+# episodes completed so far: 3
+# successes: 3 (100.0%)
+
+Task: pick up the bbq sauce and place it in the basket
+Starting episode 4...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_54_33--openvla_oft--episode=4--success=True--task=pick_up_the_bbq_sauce_and_place_it_in_the_basket.mp4
+Success: True
+# episodes completed so far: 4
+# successes: 4 (100.0%)
+
+Task: pick up the bbq sauce and place it in the basket
+Starting episode 5...
+Saved rollout MP4 at path ./rollouts/2026_01_28/2026_01_28-20_54_33--openvla_oft--episode=5--success=True--task=pick_up_the_bbq_sauce_and_place_it_in_the_basket.mp4
+Success: True
+# episodes completed so far: 5
+# successes: 5 (100.0%)
+
+Task: pick up the bbq sauce and place it in the basket
+Starting episode 6...

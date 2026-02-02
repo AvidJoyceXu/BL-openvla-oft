@@ -69,6 +69,9 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 class FinetuneConfig:
     # fmt: off
     vla_path: str = "openvla/openvla-7b"             # Path to OpenVLA model (on HuggingFace Hub or stored locally)
+    base_model_path: Optional[str] = None            # Path to original base model (for LoRA continual learning)
+                                                     #   If specified, loads base model from this path and LoRA adapter from vla_path
+                                                     #   If None, uses vla_path for both base model and LoRA adapter
 
     # Dataset
     data_root_dir: Path = Path("datasets/rlds")      # Directory containing RLDS datasets
@@ -810,11 +813,22 @@ def finetune(cfg: FinetuneConfig) -> None:
     # the `modeling_prismatic.py` file in this codebase; if so, we will copy
     # the file to the downloaded or locally stored checkpoint directory so
     # that the user's changes to the VLA class logic go into effect
-    if model_is_on_hf_hub(cfg.vla_path):
+    
+    # Determine which path to use for loading the base model
+    # For LoRA continual learning: if base_model_path is specified, use it; otherwise use vla_path
+    base_model_load_path = cfg.base_model_path if cfg.base_model_path is not None else cfg.vla_path
+    
+    # Handle HuggingFace Hub download for base model path
+    if model_is_on_hf_hub(base_model_load_path):
         # Download model directly from Hugging Face Hub
-        vla_download_path = snapshot_download(repo_id=cfg.vla_path)
-        # Overwrite VLA path
-        cfg.vla_path = vla_download_path
+        vla_download_path = snapshot_download(repo_id=base_model_load_path)
+        # Update the base model load path
+        base_model_load_path = vla_download_path
+        # If base_model_path was specified, update it; otherwise update vla_path
+        if cfg.base_model_path is not None:
+            cfg.base_model_path = base_model_load_path
+        else:
+            cfg.vla_path = base_model_load_path
     else:
         # Register OpenVLA model to HF Auto Classes (not needed if the model is on HF Hub)
         AutoConfig.register("openvla", OpenVLAConfig)
@@ -822,18 +836,19 @@ def finetune(cfg: FinetuneConfig) -> None:
         AutoProcessor.register(OpenVLAConfig, PrismaticProcessor)
         AutoModelForVision2Seq.register(OpenVLAConfig, OpenVLAForActionPrediction)
 
-    # Update config.json and sync model files
+    # Update config.json and sync model files for the base model
     if distributed_state.is_main_process:
-        update_auto_map(cfg.vla_path)
-        check_model_logic_mismatch(cfg.vla_path)
+        update_auto_map(base_model_load_path)
+        check_model_logic_mismatch(base_model_load_path)
 
     # Wait for model files to be synced
     dist.barrier()
 
-    # Load processor and VLA
-    processor = AutoProcessor.from_pretrained(cfg.vla_path, trust_remote_code=True)
+    # Load processor and VLA from the base model path
+    model_load_path = base_model_load_path
+    processor = AutoProcessor.from_pretrained(model_load_path, trust_remote_code=True)
     vla = AutoModelForVision2Seq.from_pretrained(
-        cfg.vla_path,
+        model_load_path,
         torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
         trust_remote_code=True,
@@ -844,14 +859,41 @@ def finetune(cfg: FinetuneConfig) -> None:
 
     # LoRA setup
     if cfg.use_lora:
-        lora_config = LoraConfig(
-            r=cfg.lora_rank,
-            lora_alpha=min(cfg.lora_rank, 16),
-            lora_dropout=cfg.lora_dropout,
-            target_modules="all-linear",
-            init_lora_weights="gaussian",
-        )
-        vla = get_peft_model(vla, lora_config)
+        # For LoRA continual learning:
+        # - If base_model_path is specified: load base model from base_model_path and LoRA adapter from vla_path
+        #   This prevents double-loading LoRA weights when vla_path points to a merged checkpoint
+        # - If base_model_path is None: load both base model and LoRA adapter from vla_path
+        if cfg.base_model_path is not None:
+            # Loading base model from base_model_path, LoRA adapter from vla_path
+            lora_adapter_path = os.path.join(cfg.vla_path, "lora_adapter")
+            print(f"LoRA continual learning mode:")
+            print(f"  Base model path: {cfg.base_model_path}")
+            print(f"  LoRA adapter path: {lora_adapter_path}")
+        else:
+            # Loading both base model and LoRA adapter from vla_path
+            lora_adapter_path = os.path.join(cfg.vla_path, "lora_adapter")
+        
+        # Load LoRA adapter if it exists, otherwise create a new one
+        if os.path.exists(lora_adapter_path) and os.path.isdir(lora_adapter_path):
+            print(f"Loading existing LoRA adapter from: {lora_adapter_path}")
+            vla = PeftModel.from_pretrained(vla, lora_adapter_path, is_trainable=True)
+            # Set all loaded adapter parameters to be trainable
+            for name, param in vla.named_parameters():
+                if "lora" in name.lower() or "adapter" in name.lower():
+                    param.requires_grad = True
+        else:
+            # Create new LoRA adapter
+            print(f"No existing LoRA adapter found, creating new LoRA adapter with rank={cfg.lora_rank}, dropout={cfg.lora_dropout}")
+            lora_config = LoraConfig(
+                r=cfg.lora_rank,
+                lora_alpha=cfg.lora_rank,  # Typically set to rank
+                target_modules=None,  # Will be set automatically by the model
+                lora_dropout=cfg.lora_dropout,
+                bias="none",
+                task_type="CAUSAL_LM",
+            )
+            vla = get_peft_model(vla, lora_config)
+        
         vla.print_trainable_parameters()
 
     # FiLM setup
